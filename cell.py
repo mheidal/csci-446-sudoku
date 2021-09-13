@@ -12,6 +12,9 @@ class Cell:
         self.value = val
         return
 
+    def __str__(self):
+        return f"row:{self.location[0]}; column:{self.location[1]}; value:{self.value}"
+
     def set_possible_values(self, poss) -> None:
         self.possible_values = poss
         return
