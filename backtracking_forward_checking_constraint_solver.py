@@ -1,6 +1,6 @@
-import board
 from constrain_solver import *
 from board import *
+
 
 class ForwardChecking(ConstraintSolver):
 

@@ -1,6 +1,6 @@
-import csv
 import os
 from enum import Enum
+import platform
 from typing import List
 
 import numpy as np
@@ -35,18 +35,25 @@ class Board:
     def __init__(self):
         self.read_in_csv()
 
+    def __getitem__(self, row):
+        return self.grid[row]
+
     def read_in_csv(self) -> None:
         board_file_name: str = "Easy-P1"
-        generated_grid = np.genfromtxt(f"{os.getcwd()}\\sudoku_boards\\{board_file_name}.csv", delimiter=",", dtype=int)
+        if platform.system() == 'Windows':
+            generated_grid = np.genfromtxt(f"{os.getcwd()}\\sudoku_boards\\{board_file_name}.csv", delimiter=",", dtype=int)
+        else:
+            generated_grid = np.genfromtxt(f"{os.getcwd()}/sudoku_boards/{board_file_name}.csv", delimiter=",",
+                                           dtype=int)
         row_num: int = 0
         for row in generated_grid:
             column_num: int = 0
             for cell in row:
-                self.grid[row_num, column_num] = Cell([row_num, column_num], (cell if cell > 0 else 0), (True if cell > 0 else False))
+                self.grid[row_num, column_num] = Cell([row_num, column_num], (cell if cell > 0 else 0),
+                                                      (True if cell > 0 else False))
                 column_num = column_num + 1
             row_num = row_num + 1
         print(self.grid[0][0])
-
 
     def insert_value(self, cell: Cell, value: int) -> None:
         pass
@@ -77,7 +84,7 @@ class Board:
 
         for row in rows:
             for col in cols:
-                #TODO: I DON'T KNOW HOW TO ACCESS GRID; WHAT TYPE IS IT?
+                # TODO: I DON'T KNOW HOW TO ACCESS GRID; WHAT TYPE IS IT?
                 box.append(self.grid[row][col])
 
         return box
