@@ -23,8 +23,8 @@ class ForwardChecking(ConstraintSolver):
             order = self.queueing_function(board)
             for cell, value in order:
                 child = deepcopy(board)
-
                 child.insert_value(cell, value)
+
                 self.remove_possible_values(child, cell, value)
 
                 for row in child.grid:
@@ -35,8 +35,6 @@ class ForwardChecking(ConstraintSolver):
                 if self.recursive_backtrack(child):
                     return True
             return False
-
-        pass
 
     #Method: minimum remaining values.
     #TODO: IMPLEMENT MORE, ASSESS COMPARATIVELY?
