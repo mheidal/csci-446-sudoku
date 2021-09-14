@@ -35,6 +35,9 @@ class Board:
     def __init__(self):
         self.read_in_csv()
 
+    def __getitem__(self, row):
+        return self.grid[row]
+
     @property
     def value(self) -> int:
         """
