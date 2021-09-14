@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
+from typing import Tuple
 
 from cell import Cell
 from board import Board
