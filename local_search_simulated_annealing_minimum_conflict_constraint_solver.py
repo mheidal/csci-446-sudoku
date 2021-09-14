@@ -36,7 +36,6 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
     def simulated_annealing(self, board, schedule):
         """
         VALUE(node) is the current value of the board such that value is 1 divided by the number of violated states for the current node. Value should be in Board
-        Make grids subscriptable like lists
         :param board:
         :param schedule:
         :return:
