@@ -1,5 +1,6 @@
 from board import Board
 
+
 def main():
     board: Board = Board()
     pass

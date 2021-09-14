@@ -42,10 +42,10 @@ class Board:
         for row in generated_grid:
             column_num: int = 0
             for cell in row:
-                self.grid[row_num, column_num] = Cell([row_num, column_num], (cell if cell > 0 else 0))
+                self.grid[row_num, column_num] = Cell([row_num, column_num], (cell if cell > 0 else 0), (True if cell > 0 else False))
                 column_num = column_num + 1
             row_num = row_num + 1
-        print(self.grid[8][3])
+        print(self.grid[0][0])
 
 
     def insert_value(self, cell: Cell, value: int) -> None:
