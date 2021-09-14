@@ -16,9 +16,5 @@ class ConstraintSolver(ABC):
     def solve_csp(self, board: Board) -> bool:
         pass
 
-    @abstractmethod
-    def queueing_function(self, board: Board) -> List[Cell, int]:
-        pass
-
     def print_output(self) -> None:
         pass
