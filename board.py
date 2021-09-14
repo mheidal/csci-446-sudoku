@@ -35,6 +35,20 @@ class Board:
     def __init__(self):
         self.read_in_csv()
 
+    @property
+    def value(self) -> int:
+        """
+        As value approaches 0 the number of violated constraints approaches 0 such that when value is 0, number of violated constraints is 0.
+        :return: Number of violated constraints.
+        """
+        max_violated_constraints: int = pow(3, 81)  # 3^81
+        violated_constraints: int = 0
+        for row in self.grid:
+            for cell in row:
+                if cell.value in
+
+
+
     def read_in_csv(self) -> None:
         board_file_name: str = "Easy-P1"
         generated_grid = np.genfromtxt(f"{os.getcwd()}\\sudoku_boards\\{board_file_name}.csv", delimiter=",", dtype=int)
@@ -77,7 +91,7 @@ class Board:
 
         for row in rows:
             for col in cols:
-                #TODO: I DON'T KNOW HOW TO ACCESS GRID; WHAT TYPE IS IT?
+                #TODO: I DON'T KNOW HOW TO ACCESS GRID; WHAT TYPE IS IT? Cells in the grid can be accessed in 2 ways... board[row][column] or grid[row][column]. Grid is a 2D-numpy array with size 9x9.
                 box.append(self.grid[row][col])
 
         return box

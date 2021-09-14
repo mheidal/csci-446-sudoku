@@ -1,5 +1,6 @@
-
+from board import *
 from constrain_solver import *
+
 
 class BacktrackingConstraintSolver(ConstraintSolver):
 
@@ -28,7 +29,6 @@ class BacktrackingConstraintSolver(ConstraintSolver):
 
             return False
 
-
     # Method: minimum remaining values.
     # TODO: IMPLEMENT MORE, ASSESS COMPARATIVELY?
     def queueing_function(self, board: Board) -> List[Cell, int]:
@@ -43,4 +43,3 @@ class BacktrackingConstraintSolver(ConstraintSolver):
             for val in cell.possible_values:
                 out.append((cell, val))
         return out
-
