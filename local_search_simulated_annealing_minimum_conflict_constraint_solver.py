@@ -67,7 +67,7 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
             if not cell.preset:
                 preselected = False
                 orig_val: int = cell.value
-                cell.value = random.choice(Board.domain)
+                cell.value = random.choice(Board.domain) #TODO: Board.domain can be replaced with cell.possible_values
                 new_board.grid[cell.location[0]][cell.location[1]] = cell
                 if self.debug is True:
                     print(f"Cell at [{cell.location[0]}][{cell.location[1]}] changed from {orig_val} to {cell.value}")
