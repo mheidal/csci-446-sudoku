@@ -34,8 +34,8 @@ class Board:
     grid = np.zeros([9, 9], dtype=Cell)
     domain: List[int] = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 
-    def __init__(self):
-        self.read_in_csv()
+    def __init__(self, board_file_name: str = "Easy-P1"):
+        self.read_in_csv(board_file_name)
 
     def __getitem__(self, row):
         """
@@ -48,6 +48,15 @@ class Board:
         :return: If single subscript the row specified by the param row. If double subscript the Cell at the location row, col where col is the second subscript.
         """
         return self.grid[row]
+
+    def __str__(self):
+        out = ""
+        for row in self.grid:
+            string = ""
+            for cell in row:
+                string += str(cell.value) + " "
+            out += string + "\n"
+        return out
 
     def row(self, cell: Cell) -> List[Cell]:
         """
@@ -72,7 +81,7 @@ class Board:
         :return: A block in self.grid that contains the Cell cell
         """
         return {}
-        #return self.get_cells_in_box(cell.location[0]) #TODO: fix when method complete.
+        # return self.get_cells_in_box(cell.location[0]) #TODO: fix when method complete.
 
     @property
     def value(self) -> int:
@@ -98,8 +107,7 @@ class Board:
                 pass
         return violated_constraints
 
-    def read_in_csv(self) -> None:
-        board_file_name: str = "Easy-P1"
+    def read_in_csv(self, board_file_name: str) -> None:
         generated_grid = np.genfromtxt(f"{os.getcwd()}\\sudoku_boards\\{board_file_name}.csv", delimiter=",", dtype=int)
         row_num: int = 0
         for row in generated_grid:
@@ -112,7 +120,7 @@ class Board:
         self.assign_possible_values()
         return
 
-    def insert_value(self, location: Tuple[int, int], val: int) -> None:
+    def insert_value(self, location: Tuple[int, int], val: int, update_possible_values: bool = True) -> None:
         x: int = location[0]
         y: int = location[1]
 
@@ -120,58 +128,50 @@ class Board:
         target.value = val
         target.possible_values = []
 
-        self.assign_possible_values()
+        if update_possible_values:
+            self.assign_possible_values()
         return
 
     def hash_board(self) -> int:
         pass
 
-    #TODO: THERE'S A LOT OF CODE REPETITION HERE. MAYBE IMPLEMENT A GET_CONSTRAINT_GROUPS METHOD?
-    #THIS WOULD RETURN A LIST OF LISTS OF CELLS, EACH LIST OF CELLS BEING A FULL ROW COLUMN OR BOX
+    # Checks whether the board is in a success state (all rows, columns, and boxes full and with no constraints),
+    # a failure state (any constraint is violated), or a continue state (not failure and the board is incomplete)
     def check_success(self) -> Status:
-        complete_section = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+        cont: bool = False
 
         for row in self.grid:
-            values_in_section = []
             for cell in row:
-                if cell.possible_values != []:
-                    return Status.CONTINUE
-                elif cell.value in values_in_section:
-                    return Status.FAILURE
-                else:
-                    values_in_section.append(cell.value)
-            if values_in_section != complete_section:
-                return Status.FAILURE
+                if cell.value == 0:
+                    cont = True
+                    continue
+                neighbors = self.get_cells_with_constraint(cell)
+                for neighbor in neighbors:
+                    if cell.value == neighbor.value and cell.value != 0:
+                        return Status.FAILURE
 
-        for i in range(9):
-            col = self.grid[:, i]
-            values_in_section = []
-            for cell in col:
-                if cell.possible_values != []:
-                    return Status.CONTINUE
-                elif cell.value in values_in_section:
-                    return Status.FAILURE
-                else:
-                    values_in_section.append(cell.value)
-            if values_in_section != complete_section:
-                return Status.FAILURE
+        if cont:
+            return Status.CONTINUE
+        else:
+            return Status.SUCCESS
 
-        for i in range(9):
-            box = self.get_cells_in_box(i)
-            values_in_section = []
-            for cell in row:
-                if cell.possible_values != []:
-                    return Status.CONTINUE
-                elif cell.value in values_in_section:
-                    return Status.FAILURE
-                else:
-                    values_in_section.append(cell.value)
-            if values_in_section != complete_section:
-                return Status.FAILURE
+    # Given a target cell, returns all cells which share a constraint with that cell.
+    # i.e. all cells in the same row, column or box.
+    # TODO: THIS DOESN'T WORK. PROBLEM WITH THIS METHOD? OR WITH get_cells_in_box MAYBE?
+    def get_cells_with_constraint(self, target: Cell) -> List[Cell]:
+        connected_cells = []
+        constraints = [self.grid[target.location[0]], self.grid[:][target.location[1]], self.get_cells_in_box(target.get_box_index())]
 
-        return Status.SUCCESS
+        for constraint in constraints:
+            for cell in constraint:
+                if cell is not target:
+                    connected_cells.append(cell)
 
-    def get_cells_in_box(self, index: int) -> List[Cell]: # TODO @Mike why dont you just take in a row and column and return the block based on that rather than index?
+        return connected_cells
+
+    def get_cells_in_box(self, index: int) -> List[
+        Cell]:  # TODO @Mike why dont you just take in a row and column and return the block based on that rather than index?
         rows = []
         cols = []
         box = []
@@ -195,7 +195,8 @@ class Board:
 
         return box
 
-    #Iterates through each row, column and box, subtracting values from
+    # TODO: COULD BE A LOT MORE ELEGANT.
+    # TODO: INTEGRATE get_cells_with_constraint
     def assign_possible_values(self) -> None:
 
         for row in self.grid:

@@ -19,8 +19,4 @@ class ConstraintSolver(ABC):
 
     def print_output(self, board: Board) -> None:
         print(board)
-        for row in board.grid:
-            string = ""
-            for cell in row:
-                string += str(cell.value) + " "
-            print(string)
+        return
