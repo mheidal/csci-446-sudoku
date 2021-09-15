@@ -1,4 +1,5 @@
 from board import Board
+from local_search_simulated_annealing_minimum_conflict_constraint_solver import LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver
 
 
 def main():
@@ -10,6 +11,10 @@ def main():
     print(f"row[0]:\t\t\t{row[0]}")
     print(f"column[0]:\t\t{column[0]}")
     print(f"board.value:\t{board.value}")
+
+    simulated_annealing: LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver = LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver()
+    simulated_annealing.solve_csp(board=board)
+
     pass
 
 

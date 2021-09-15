@@ -1,3 +1,7 @@
+import random
+from random import randrange
+from math import exp
+
 from constrain_solver import *
 from board import *
 
@@ -15,42 +19,50 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
 
     def __init__(self):
         self.starting_temperature: int = 1000000
+        self.number_iterations: int = 10000
 
-    def queueing_function(self, board: Board) -> List[Cell, int]:
+    def queueing_function(self, board: Board):
         pass
 
     def solve_csp(self, board: Board) -> bool:
-        pass
+        print(self.__class__)
+        self.solution = self.simulated_annealing(board=board)
+        self.print_output()
+        return True
 
     def schedule(self, iteration_number: int) -> float:
-        tau: float = 1.0
-        return (self.starting_temperature * tau)/(tau + iteration_number)
+        tau: float = 99 # controls curvature of the graph of the temperature over iterations
+        return (self.starting_temperature * tau) / (tau + iteration_number)
 
-    def make_node(self, board: Board) -> Board:
+    def simulated_annealing(self, board: Board) -> Board:
         """
-
-        :return:
-        """
-        return board
-
-    def simulated_annealing(self, board, schedule):
-        """
-        VALUE(node) is the current value of the board such that value is 1 divided by the number of violated states for the current node. Value should be in Board
         :param board:
-        :param schedule:
         :return:
         """
-        current_board = None
-        next_board = None
-        temperature = None
-        energy = None
-        k_boltzmann_constant: float = 1.38*pow(10, -23)
-        current_board = self.make_node(board)
-        for t in range(1, self.starting_temperature):
-            temperature = self.schedule(t)
-            if temperature == 0:
+        k_boltzmann_constant: float = 0.0000001
+        #k_boltzmann_constant: float = 1.38*pow(10, -23)
+        current_board = board
+        for t in range(1, self.number_iterations):
+            temperature: float = self.schedule(t)
+            if temperature < 0 or t == self.number_iterations - 1:
                 return current_board
-            next_board = self.random_neighbor(current_board)
+            next_board: Board = self.random_neighbor(current_board)
+            delta_energy: int = (next_board.value - current_board.value) * -1
+            if delta_energy > 0:  # if the number of violated constrains in current is greater than that in next
+                current_board = next_board
+            else:
+                next_board_probability: float = 0 if (delta_energy == 0) and (temperature < self.starting_temperature/2) else 1 / (exp((-delta_energy) / (k_boltzmann_constant * temperature)))
+                current_board = random.choices([current_board, next_board], weights=[1, next_board_probability * 100], k=1)[0]
 
-    def random_neighbor(self, current_board):
+    @staticmethod
+    def random_neighbor(current_board) -> Board:
+        preselected: bool = True
+        while preselected:
+            cell: Cell = current_board[randrange(9)][randrange(9)]
+            if not cell.preset:
+                preselected = False
+                orig_val: int = cell.value
+                cell.value = random.choice(Board.domain)
+                if True:
+                    print(f"Cell at [{cell.location[0]}][{cell.location[1]}] changed from {orig_val} to {cell.value}")
         return current_board

@@ -17,4 +17,5 @@ class ConstraintSolver(ABC):
         pass
 
     def print_output(self) -> None:
+        print(self.solution.value)
         pass
