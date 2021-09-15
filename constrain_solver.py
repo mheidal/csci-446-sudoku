@@ -3,6 +3,7 @@ from typing import List
 
 from cell import Cell
 from board import Board
+from copy import deepcopy
 
 
 class ConstraintSolver(ABC):
