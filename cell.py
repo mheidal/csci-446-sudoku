@@ -1,16 +1,15 @@
 from typing import List
-
+from typing import Tuple
 
 class Cell:
-    location: List[int] = {int, int}
-    value: int = 0
-    possible_values: List[int] = None
-    preset: bool = None
 
-    def __init__(self, loc: List[int], val: int = 0, preset: bool = False):
-        self.location = loc
+    def __init__(self, loc: Tuple[int, int], val: int = 0, preset: bool = False):
+        self.location: Tuple[int, int] = loc
         self.value = val
         self.preset = preset
+        self.possible_values: List[int] = []
+        if not preset:
+            self.possible_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         return
 
     def __str__(self):
