@@ -31,10 +31,10 @@ class Status(Enum):
 
 
 class Board:
-    grid = np.zeros([9, 9], dtype=Cell)
-    domain: List[int] = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 
     def __init__(self, board_file_name: str = "Easy-P1"):
+        self.grid = np.zeros([9, 9], dtype=Cell)
+        self.domain: List[int] = {1, 2, 3, 4, 5, 6, 7, 8, 9}
         self.read_in_csv(board_file_name)
 
     def __getitem__(self, row):
@@ -161,11 +161,11 @@ class Board:
     # TODO: THIS DOESN'T WORK. PROBLEM WITH THIS METHOD? OR WITH get_cells_in_box MAYBE?
     def get_cells_with_constraint(self, target: Cell) -> List[Cell]:
         connected_cells = []
-        constraints = [self.grid[target.location[0]], self.grid[:][target.location[1]], self.get_cells_in_box(target.get_box_index())]
+        constraints = [self.grid[target.location[0]], self.grid[:,target.location[1]], self.get_cells_in_box(target.get_box_index())]
 
         for constraint in constraints:
             for cell in constraint:
-                if cell is not target:
+                if cell is not target and cell not in connected_cells:
                     connected_cells.append(cell)
 
         return connected_cells

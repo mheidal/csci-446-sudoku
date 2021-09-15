@@ -12,9 +12,9 @@ class Cell:
             self.possible_values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         return
 
-    def __str__(self, default: bool = True):
+    def __str__(self, default: bool = True) -> str:
         if default:
-            f"row:{self.location[0]}; column:{self.location[1]}; value:{self.value}; predetermined:{self.preset}"
+            return f"row:{self.location[0]}; column:{self.location[1]}; value:{self.value}; predetermined:{self.preset}"
         else:
             return str(self.value)
 

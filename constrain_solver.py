@@ -19,4 +19,5 @@ class ConstraintSolver(ABC):
 
     def print_output(self, board: Board) -> None:
         print(board)
+        print("Steps taken:", self.steps_taken)
         return
