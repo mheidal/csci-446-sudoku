@@ -1,7 +1,9 @@
 import os
+from copy import deepcopy
 from enum import Enum
 import platform
 from typing import List
+from typing import Tuple
 
 import numpy as np
 
@@ -32,11 +34,15 @@ class Status(Enum):
 class Board:
     domain: List[int] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-    def __init__(self):
-        self.grid = np.zeros([9, 9], dtype=Cell)
-        self.read_in_csv()
+    def __init__(self, *, board_file_name: str = "Easy-P1",  grid=None):
+        self.board_file_name: str = board_file_name
+        if grid is None:
+            self.grid = np.zeros([9, 9], dtype=Cell)
+            self.read_in_csv(board_file_name)
+        else:
+            self.grid = deepcopy(grid)
 
-    def __getitem__(self, row):
+    def __getitem__(self, row): # TODO: Broken after implementation of __str__
         """
         Allows Board to be subscriptable.
         Ex:
@@ -47,6 +53,15 @@ class Board:
         :return: If single subscript the row specified by the param row. If double subscript the Cell at the location row, col where col is the second subscript.
         """
         return self.grid[row]
+
+    def __str__(self):
+        out = ""
+        for row in self.grid:
+            string = ""
+            for cell in row:
+                string += str(cell.value) + " "
+            out += string + "\n"
+        return out
 
     def row(self, cell: Cell) -> List[Cell]:
         """
@@ -70,8 +85,8 @@ class Board:
         :param cell: A Cell in the block to return
         :return: A block in self.grid that contains the Cell cell
         """
-        return {}
-        #return self.get_cells_in_box(cell.location[0]) #TODO: fix when method complete.
+        return []
+        # return self.get_cells_in_box(cell.location[0]) #TODO: fix when method complete.
 
     @property
     def value(self) -> int:
@@ -97,10 +112,10 @@ class Board:
                 pass
         return violated_constraints
 
-    def read_in_csv(self) -> None:
-        board_file_name: str = "Easy-P1"
+    def read_in_csv(self, board_file_name: str) -> None:
         if platform.system() == 'Windows':
-            generated_grid = np.genfromtxt(f"{os.getcwd()}\\sudoku_boards\\{board_file_name}.csv", delimiter=",", dtype=int)
+            generated_grid = np.genfromtxt(f"{os.getcwd()}\\sudoku_boards\\{board_file_name}.csv", delimiter=",",
+                                           dtype=int)
         else:
             generated_grid = np.genfromtxt(f"{os.getcwd()}/sudoku_boards/{board_file_name}.csv", delimiter=",",
                                            dtype=int)
@@ -112,19 +127,62 @@ class Board:
                                                       (True if cell > 0 else False))
                 column_num = column_num + 1
             row_num = row_num + 1
+        self.assign_possible_values()
+        return
 
-        print(self.grid[0][0])
+    def insert_value(self, location: Tuple[int, int], val: int, update_possible_values: bool = True) -> None:
+        x: int = location[0]
+        y: int = location[1]
 
-    def insert_value(self, cell: Cell, value: int) -> None:
-        pass
+        target: Cell = self.grid[x][y]
+        target.value = val
+        target.possible_values = []
+
+        if update_possible_values:
+            self.assign_possible_values()
+        return
 
     def hash_board(self) -> int:
         pass
 
+    # Checks whether the board is in a success state (all rows, columns, and boxes full and with no constraints),
+    # a failure state (any constraint is violated), or a continue state (not failure and the board is incomplete)
     def check_success(self) -> Status:
-        pass
 
-    def get_cells_in_box(self, index: int) -> List[Cell]: # TODO @Mike why dont you just take in a row and column and return the block based on that rather than index?
+        cont: bool = False
+
+        for row in self.grid:
+            for cell in row:
+                if cell.value == 0:
+                    cont = True
+                    continue
+                neighbors = self.get_cells_with_constraint(cell)
+                for neighbor in neighbors:
+                    if cell.value == neighbor.value and cell.value != 0:
+                        return Status.FAILURE
+
+        if cont:
+            return Status.CONTINUE
+        else:
+            return Status.SUCCESS
+
+    # Given a target cell, returns all cells which share a constraint with that cell.
+    # i.e. all cells in the same row, column or box.
+    # TODO: THIS DOESN'T WORK. PROBLEM WITH THIS METHOD? OR WITH get_cells_in_box MAYBE?
+    def get_cells_with_constraint(self, target: Cell) -> List[Cell]:
+        connected_cells = []
+        constraints = [self.grid[target.location[0]], self.grid[:][target.location[1]],
+                       self.get_cells_in_box(target.get_box_index())]
+
+        for constraint in constraints:
+            for cell in constraint:
+                if cell is not target:
+                    connected_cells.append(cell)
+
+        return connected_cells
+
+    def get_cells_in_box(self, index: int) -> List[
+        Cell]:  # TODO @Mike why dont you just take in a row and column and return the block based on that rather than index?
         rows = []
         cols = []
         box = []
@@ -144,7 +202,42 @@ class Board:
 
         for row in rows:
             for col in cols:
-                # TODO: I DON'T KNOW HOW TO ACCESS GRID; WHAT TYPE IS IT? Cells in the grid can be accessed in 2 ways... board[row][column] or grid[row][column]. Grid is a 2D-numpy array with size 9x9.
                 box.append(self.grid[row][col])
 
         return box
+
+    # TODO: COULD BE A LOT MORE ELEGANT.
+    # TODO: INTEGRATE get_cells_with_constraint
+    def assign_possible_values(self) -> None:
+
+        for row in self.grid:
+            reserved_values = []
+            for cell in row:
+                if cell.value != 0:
+                    reserved_values.append(cell.value)
+            for cell in row:
+                for reserved_value in reserved_values:
+                    if reserved_value in cell.possible_values:
+                        cell.possible_values.remove(reserved_value)
+
+        for i in range(9):
+            col = self.grid[:, i]
+            reserved_values = []
+            for cell in col:
+                if cell.value != 0:
+                    reserved_values.append(cell.value)
+            for cell in col:
+                for reserved_value in reserved_values:
+                    if reserved_value in cell.possible_values:
+                        cell.possible_values.remove(reserved_value)
+
+        for i in range(9):
+            box = self.get_cells_in_box(i)
+            reserved_values = []
+            for cell in box:
+                if cell.value != 0:
+                    reserved_values.append(cell.value)
+            for cell in box:
+                for reserved_value in reserved_values:
+                    if reserved_value in cell.possible_values:
+                        cell.possible_values.remove(reserved_value)
