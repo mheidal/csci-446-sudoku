@@ -4,16 +4,14 @@ from local_search_simulated_annealing_minimum_conflict_constraint_solver import 
 
 def main():
     board: Board = Board()
-    row = board.row(board.grid[3][4])
-    column = board.column(board.grid[3][4])
-
-    print(f"board[3][4]:\t{board.grid[3][4]}")
-    print(f"row[0]:\t\t\t{row[0]}")
-    print(f"column[0]:\t\t{column[0]}")
     print(f"board.value:\t{board.value}")
+    easy_p1_sol: Board = Board(board_file_name="Easy-P1-sol")
+    print(f"sol.value:\t{easy_p1_sol.value}")
 
     simulated_annealing: LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver = LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver()
     simulated_annealing.solve_csp(board=board)
+    for row in simulated_annealing.solution.grid:
+        for cell in row:
 
     pass
 

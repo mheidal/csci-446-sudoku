@@ -1,6 +1,7 @@
 from typing import List
 from typing import Tuple
 
+
 class Cell:
 
     def __init__(self, loc: Tuple[int, int], val: int = 0, preset: bool = False):
