@@ -1,5 +1,6 @@
 import csv
 import os
+import platform
 from enum import Enum
 from typing import List
 from typing import Tuple
@@ -114,12 +115,17 @@ class Board:
         return violated_constraints
 
     def read_in_csv(self, board_file_name: str) -> None:
-        generated_grid = np.genfromtxt(f"{os.getcwd()}\\sudoku_boards\\{board_file_name}.csv", delimiter=",", dtype=int)
+        if platform.system() == 'Windows':
+            input_file: str = f"{os.getcwd()}\\sudoku_boards\\{board_file_name}.csv"
+        else:
+            input_file: str = f"{os.getcwd()}/sudoku_boards/{board_file_name}.csv"
+        with open(input_file, 'r', encoding='utf-8-sig') as f:
+            generated_grid = np.genfromtxt(f, dtype=int, delimiter=',')
         row_num: int = 0
         for row in generated_grid:
             column_num: int = 0
             for cell in row:
-                self.grid[row_num, column_num] = Cell([row_num, column_num], (cell if cell > 0 else 0),
+                self.grid[row_num, column_num] = Cell((row_num, column_num), (cell if cell > 0 else 0),
                                                       (True if cell > 0 else False))
                 column_num = column_num + 1
             row_num = row_num + 1
