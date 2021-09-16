@@ -87,8 +87,7 @@ class Board:
         :param cell: A Cell in the block to return
         :return: A block in self.grid that contains the Cell cell
         """
-        return {}
-        # return self.get_cells_in_box(cell.location[0]) #TODO: fix when method complete.
+        return self.get_cells_in_box(cell.get_box_index())
 
     @property
     def value(self) -> int:
@@ -96,22 +95,22 @@ class Board:
         As value approaches 0 the number of violated constraints approaches 0 such that when value is 0, number of violated constraints is 0.
         :return: Number of violated constraints.
         """
-        max_violated_constraints: int = pow(4, 81)  # 4^81
+        # max_violated_constraints: int = pow(4, 81)  # 4^81
         violated_constraints: int = 0
         for row in self.grid:
             for cell in row:
                 for other_cell in self.row(cell):
-                    if other_cell != cell and cell.value == other_cell.value:
-                        violated_constraints = violated_constraints + 1
+                    if other_cell.get_col_index() != cell.get_col_index() and cell.value == other_cell.value:
+                        violated_constraints += 1
                 for other_cell in self.column(cell):
-                    if other_cell != cell and cell.value == other_cell.value:
-                        violated_constraints = violated_constraints + 1
+                    if other_cell.get_row_index() != cell.get_row_index() and cell.value == other_cell.value:
+                        violated_constraints += 1
                 for other_cell in self.block(cell):
-                    if other_cell != cell and cell.value == other_cell.value:
-                        violated_constraints = violated_constraints + 1
+                    if (not (
+                            other_cell.get_row_index() == cell.get_row_index() and other_cell.get_col_index() == cell.get_col_index())) and cell.value == other_cell.value:
+                        violated_constraints += 1
                 if cell.value not in Board.domain:
-                    violated_constraints = violated_constraints + 1
-                pass
+                    violated_constraints += 1
         return violated_constraints
 
     def read_in_csv(self, board_file_name: str) -> None:
