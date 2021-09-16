@@ -31,10 +31,11 @@ class Status(Enum):
 
 
 class Board:
+    domain: List[int] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     def __init__(self, board_file_name: str = "Easy-P1"):
         self.grid = np.zeros([9, 9], dtype=Cell)
-        self.domain: List[int] = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+        self.domain: List[int] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         self.read_in_csv(board_file_name)
 
     def __getitem__(self, row):
@@ -54,7 +55,13 @@ class Board:
         for row in self.grid:
             string = ""
             for cell in row:
-                string += str(cell.value) + " "
+                if cell.location[1] % 3 == 0 and cell.location[1] > 0:
+                    string += "| " + str(cell.value) + " "
+                elif cell.location[0] % 3 == 0 and cell.location[1] == 0 and cell.location[0] > 0:
+                    string += "------|-------|------\n"
+                    string += str(cell.value) + " "
+                else:
+                    string += str(cell.value) + " "
             out += string + "\n"
         return out
 
