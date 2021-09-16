@@ -59,7 +59,13 @@ class Board:
         for row in self.grid:
             string = ""
             for cell in row:
-                string += str(cell.value) + " "
+                if cell.location[1] % 3 == 0 and cell.location[1] > 0:
+                    string += "| " + str(cell.value) + " "
+                elif cell.location[0] % 3 == 0 and cell.location[1] == 0 and cell.location[0] > 0:
+                    string += "------|-------|------\n"
+                    string += str(cell.value) + " "
+                else:
+                    string += str(cell.value) + " "
             out += string + "\n"
         return out
 
@@ -141,7 +147,7 @@ class Board:
         for row in generated_grid:
             column_num: int = 0
             for cell in row:
-                self.grid[row_num, column_num] = Cell([row_num, column_num], (cell if cell > 0 else 0),
+                self.grid[row_num, column_num] = Cell((row_num, column_num), (cell if cell > 0 else 0),
                                                       (True if cell > 0 else False))
                 column_num = column_num + 1
             row_num = row_num + 1
@@ -198,6 +204,9 @@ class Board:
                     connected_cells.append(cell)
 
         return connected_cells
+
+    def get_box_list(self) -> List[List[Cell]]:
+        return [self.get_cells_in_box(0), self.get_cells_in_box(1), self.get_cells_in_box(2), self.get_cells_in_box(3), self.get_cells_in_box(4), self.get_cells_in_box(5), self.get_cells_in_box(6), self.get_cells_in_box(7), self.get_cells_in_box(8)]
 
     def get_cells_in_box(self, index: int) -> List[
         Cell]:  # TODO @Mike why dont you just take in a row and column and return the block based on that rather than index?
