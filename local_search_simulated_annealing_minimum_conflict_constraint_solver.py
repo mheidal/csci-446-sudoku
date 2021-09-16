@@ -15,18 +15,19 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
     Minimum Conflict: Chooses new var val that results in the minimum number of conflicts with other vars.
 
     https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.216.3484&rep=rep1&type=pdf
+    http://rhydlewis.eu/papers/META_CAN_SOLVE_SUDOKU.pdf
     """
 
     def __init__(self):
         self.starting_temperature: int = 1000000
-        self.number_iterations: int = 5000
+        self.number_iterations: int = 2500
         self.debug = False
 
     def queueing_function(self, board: Board):
         pass
 
     def solve_csp(self, board: Board) -> bool:
-        print(self.__class__)
+        print(self.__class__.__name__)
         self.solution = self.simulated_annealing(board=board)
         self.print_output(self.solution)
         return True
@@ -49,7 +50,7 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
             if temperature < 0 or t == self.number_iterations - 1 or current_board.value == 0:
                 print(
                     f"\nSimulated Annealing\nViolated Constraints: {current_board.value}\nNumber of Iterations: {t}\nCurrent Temperature: {temperature}\n")
-                return current_board
+                return current_board # if current_board.value == 0 else self.simulated_annealing(deepcopy(current_board))
             next_board: Board = self.random_neighbor(current_board)
             delta_energy: int = (next_board.value - current_board.value) * -1
             if delta_energy > 0:  # if the number of violated constrains in current is greater than that in next
@@ -71,10 +72,10 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
         # new_board.grid = deepcopy(current_board.grid)
         while preselected:
             cell: Cell = deepcopy(current_board.grid[randrange(9)][randrange(9)])
-            if not cell.preset and new_board.cell_value(cell) != 0:  # TODO: Only select cells that violate constraints
+            if not cell.preset and new_board.cell_value(cell) != 0:
                 preselected = False
                 orig_val: int = cell.value
-                cell.value = random.choice(cell.possible_values)  # TODO: Board.domain can be replaced with cell.possible_values
+                cell.value = random.choice(cell.possible_values)
                 new_board.grid[cell.location[0]][cell.location[1]] = cell
                 if self.debug is True:
                     print(f"Cell at [{cell.location[0]}][{cell.location[1]}] changed from {orig_val} to {cell.value}")
