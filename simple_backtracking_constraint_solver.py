@@ -4,12 +4,30 @@ from board import Board
 
 from cell import Cell
 
-from constrain_solver import ConstraintSolver
+from backtracking_constraint_solver import *
 
 
-class SimpleBacktrackingConstraintSolver(ConstraintSolver):
-    def queueing_function(self, board: Board) -> List[Cell, int]:
-        pass
+class SimpleBacktrackingConstraintSolver(BacktrackingConstraintSolver):
 
-    def solve_csp(self, board: Board) -> bool:
-        pass
+    def recursive_backtrack(self, board: Board, depth: int, method: int):
+        self.steps_taken += 1
+        depth += 1
+
+        status = board.check_success()
+
+        if status == Status.SUCCESS:
+            self.print_output(board)
+            return True
+        elif status == Status.FAILURE:
+            return False
+        else:
+            order = self.queueing_function(board, method)
+
+            for cell, value in order:
+                child = deepcopy(board)
+                child.insert_value(cell.location, value, False)
+
+                if self.recursive_backtrack(child, depth, method):
+                    return True
+
+            return False
