@@ -132,11 +132,11 @@ class Board:
 
     def read_in_csv(self, board_file_name: str) -> None:
         if platform.system() == 'Windows':
-            generated_grid = np.genfromtxt(f"{os.getcwd()}\\sudoku_boards\\{board_file_name}.csv", delimiter=",",
-                                           dtype=int)
+            input_file: str = f"{os.getcwd()}\\sudoku_boards\\{board_file_name}.csv"
         else:
-            generated_grid = np.genfromtxt(f"{os.getcwd()}/sudoku_boards/{board_file_name}.csv", delimiter=",",
-                                           dtype=int)
+            input_file: str = f"{os.getcwd()}/sudoku_boards/{board_file_name}.csv"
+        with open(input_file, 'r', encoding='utf-8-sig') as f:
+            generated_grid = np.genfromtxt(f, dtype=int, delimiter=',')
         row_num: int = 0
         for row in generated_grid:
             column_num: int = 0
