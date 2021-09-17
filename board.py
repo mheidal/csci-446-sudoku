@@ -4,6 +4,7 @@ import platform
 from enum import Enum
 from typing import List
 from typing import Tuple
+from copy import deepcopy
 
 import numpy as np
 
@@ -129,7 +130,7 @@ class Board:
                                                       (True if cell > 0 else False))
                 column_num = column_num + 1
             row_num = row_num + 1
-        self.assign_possible_values()
+        self.initialize_possible_values()
         return
 
     def insert_value(self, location: Tuple[int, int], val: int, update_possible_values: bool = True) -> None:
@@ -141,7 +142,7 @@ class Board:
         target.possible_values = []
 
         if update_possible_values:
-            self.assign_possible_values()
+            self.update_possible_values(self.grid[x, y])
         return
 
     def hash_board(self) -> int:
@@ -207,38 +208,43 @@ class Board:
 
         return box
 
-    # TODO: COULD BE A LOT MORE ELEGANT.
-    # TODO: INTEGRATE get_cells_with_constraint
-    def assign_possible_values(self) -> None:
+    def initialize_possible_values(self) -> None:
+        for row in self.grid:
+            for cell in row:
+                if cell.preset:
+                    cell.possible_values = []
+                else:
+                    cell.possible_values = deepcopy(self.domain)
 
         for row in self.grid:
-            reserved_values = []
             for cell in row:
-                if cell.value != 0:
-                    reserved_values.append(cell.value)
-            for cell in row:
-                for reserved_value in reserved_values:
-                    if reserved_value in cell.possible_values:
-                        cell.possible_values.remove(reserved_value)
+                if cell.preset:
+                    neighbors = self.get_cells_with_constraint(cell)
+                    for neighbor in neighbors:
+                        if cell.value in neighbor.possible_values:
+                            neighbor.possible_values.remove(cell.value)
+        return
 
-        for i in range(9):
-            col = self.grid[:, i]
-            reserved_values = []
-            for cell in col:
-                if cell.value != 0:
-                    reserved_values.append(cell.value)
-            for cell in col:
-                for reserved_value in reserved_values:
-                    if reserved_value in cell.possible_values:
-                        cell.possible_values.remove(reserved_value)
+    def update_possible_values(self, target: Cell) -> bool:
+        neighbors = self.get_cells_with_constraint(target)
+        for neighbor in neighbors:
+            if target.value in neighbor.possible_values:
+                neighbor.possible_values.remove(target.value)
+            if len(neighbor.possible_values) == 0 and neighbor.value == 0:
+                return False
+        return True
 
-        for i in range(9):
-            box = self.get_cells_in_box(i)
-            reserved_values = []
-            for cell in box:
-                if cell.value != 0:
-                    reserved_values.append(cell.value)
-            for cell in box:
-                for reserved_value in reserved_values:
-                    if reserved_value in cell.possible_values:
-                        cell.possible_values.remove(reserved_value)
+    # def is_arc_consistent(self, board: Board, target: Cell) -> bool:
+    #     marked = []
+    #     for row in self.grid:
+    #         marked_row = []
+    #         for cell in row:
+    #             if cell.value != 0:
+    #                 marked_row.append(True)
+    #             else:
+    #                 marked_row.append(False)
+    #         marked.append(marked_row)
+    #
+    #     return self.arc_consistency_recursive_backtrack(marked, target)
+    #
+    # def arc_consistency_recursive_backtrack(self, marked: List[bool][bool]) -> bool:
