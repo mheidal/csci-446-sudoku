@@ -4,6 +4,7 @@ import platform
 from enum import Enum
 from typing import List
 from typing import Tuple
+from copy import deepcopy
 
 import numpy as np
 
@@ -141,7 +142,7 @@ class Board:
         target.possible_values = []
 
         if update_possible_values:
-            self.assign_possible_values()
+            self.update_possible_values(self.grid[x, y])
         return
 
     def hash_board(self) -> int:
@@ -207,15 +208,17 @@ class Board:
 
         return box
 
-    def initialize_possible_values(self)-> None:
+    def initialize_possible_values(self) -> None:
         for row in self.grid:
             for cell in row:
-                if not cell.preset:
-                    cell.possible_values = self.domain
+                if cell.preset:
+                    cell.possible_values = []
+                else:
+                    cell.possible_values = deepcopy(self.domain)
 
         for row in self.grid:
             for cell in row:
-                if not cell.value == 0:
+                if cell.preset:
                     neighbors = self.get_cells_with_constraint(cell)
                     for neighbor in neighbors:
                         if cell.value in neighbor.possible_values:
@@ -227,6 +230,21 @@ class Board:
         for neighbor in neighbors:
             if target.value in neighbor.possible_values:
                 neighbor.possible_values.remove(target.value)
-            if len(neighbor.possible_values) == 0:
+            if len(neighbor.possible_values) == 0 and neighbor.value == 0:
                 return False
         return True
+
+    # def is_arc_consistent(self, board: Board, target: Cell) -> bool:
+    #     marked = []
+    #     for row in self.grid:
+    #         marked_row = []
+    #         for cell in row:
+    #             if cell.value != 0:
+    #                 marked_row.append(True)
+    #             else:
+    #                 marked_row.append(False)
+    #         marked.append(marked_row)
+    #
+    #     return self.arc_consistency_recursive_backtrack(marked, target)
+    #
+    # def arc_consistency_recursive_backtrack(self, marked: List[bool][bool]) -> bool:
