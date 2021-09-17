@@ -114,7 +114,7 @@ class Board:
                 column_num = column_num + 1
             row_num = row_num + 1
 
-
+git
 # NOAHS PRINT FUCNTION
     def __str__(self) -> np.array:
         print_grid = np.zeros([9, 9])
