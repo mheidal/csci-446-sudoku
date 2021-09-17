@@ -12,12 +12,13 @@ def main():
     print(easy_p1_sol)  # TODO: if iterations is complete pass the current board back into the solver...
 
     simulated_annealing: LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver = LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver()
-    simulated_annealing.solve_csp(board=board)
-    for row in simulated_annealing.solution.grid:
-        for cell in row:
-            sol_cell: Cell = easy_p1_sol.grid[cell.get_row_index()][cell.get_col_index()]
-            if cell.value != sol_cell.value:
-                print(cell)
+    solved: bool = simulated_annealing.solve_csp(board=board)
+    if solved is False:
+        for row in simulated_annealing.solutions[0].grid:
+            for cell in row:
+                sol_cell: Cell = easy_p1_sol.grid[cell.get_row_index()][cell.get_col_index()]
+                if cell.value != sol_cell.value:
+                    print(cell)
     pass
 
 
