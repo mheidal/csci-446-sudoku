@@ -117,7 +117,7 @@ class Board:
                                                       (True if cell > 0 else False))
                 column_num = column_num + 1
             row_num = row_num + 1
-        self.assign_possible_values()
+        self.initialize_possible_values()
         return
 
     def insert_value(self, location: Tuple[int, int], val: int, update_possible_values: bool = True) -> None:
@@ -195,38 +195,26 @@ class Board:
 
         return box
 
-    # TODO: COULD BE A LOT MORE ELEGANT.
-    # TODO: INTEGRATE get_cells_with_constraint
-    def assign_possible_values(self) -> None:
+    def initialize_possible_values(self)-> None:
+        for row in self.grid:
+            for cell in row:
+                if not cell.preset:
+                    cell.possible_values = self.domain
 
         for row in self.grid:
-            reserved_values = []
             for cell in row:
-                if cell.value != 0:
-                    reserved_values.append(cell.value)
-            for cell in row:
-                for reserved_value in reserved_values:
-                    if reserved_value in cell.possible_values:
-                        cell.possible_values.remove(reserved_value)
+                if not cell.value == 0:
+                    neighbors = self.get_cells_with_constraint(cell)
+                    for neighbor in neighbors:
+                        if cell.value in neighbor.possible_values:
+                            neighbor.possible_values.remove(cell.value)
+        return
 
-        for i in range(9):
-            col = self.grid[:, i]
-            reserved_values = []
-            for cell in col:
-                if cell.value != 0:
-                    reserved_values.append(cell.value)
-            for cell in col:
-                for reserved_value in reserved_values:
-                    if reserved_value in cell.possible_values:
-                        cell.possible_values.remove(reserved_value)
-
-        for i in range(9):
-            box = self.get_cells_in_box(i)
-            reserved_values = []
-            for cell in box:
-                if cell.value != 0:
-                    reserved_values.append(cell.value)
-            for cell in box:
-                for reserved_value in reserved_values:
-                    if reserved_value in cell.possible_values:
-                        cell.possible_values.remove(reserved_value)
+    def update_possible_values(self, target: Cell) -> bool:
+        neighbors = self.get_cells_with_constraint(target)
+        for neighbor in neighbors:
+            if target.value in neighbor.possible_values:
+                neighbor.possible_values.remove(target.value)
+            if len(neighbor.possible_values) == 0:
+                return False
+        return True
