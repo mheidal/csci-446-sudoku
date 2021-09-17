@@ -33,7 +33,12 @@ class Board:
     grid = np.zeros([9, 9], dtype=Cell)
     domain: List[int] = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 
+    # def __init__(self):
+    #     self.read_in_csv()
+
     def __init__(self):
+        self.grid = np.zeros([9, 9], dtype=Cell)
+        self.domain: List[int] = {1, 2, 3, 4, 5, 6, 7, 8, 9}
         self.read_in_csv()
 
     def __getitem__(self, row):
@@ -108,7 +113,7 @@ class Board:
                                                       (True if cell > 0 else False))
                 column_num = column_num + 1
             row_num = row_num + 1
-        print(self.grid[8][3])
+
 
 # NOAHS PRINT FUCNTION
     def __str__(self) -> np.array:
