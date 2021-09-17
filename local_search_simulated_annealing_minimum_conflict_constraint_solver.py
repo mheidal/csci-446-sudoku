@@ -24,7 +24,7 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
     def __init__(self):
         self.starting_temperature: int = 1000000
         self.number_iterations: int = 2500
-        self.debug = True
+        self.debug = False
         self.solutions: List[Board] = []
 
     def queueing_function(self, board: Board):
@@ -36,16 +36,18 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
         non_solutions: List[Board] = []
         thread_count: int = 25
         for i in range(0, thread_count):
-            threads.append(threading.Thread(target=self.simulated_annealing_v3, args=(deepcopy(board),),
+            threads.append(threading.Thread(target=self.simulated_annealing, args=(deepcopy(board),),
                                             name=f"simulated_annealing_thread{i}"))
         for thread in threads:
             if self.debug:
                 print(f"{thread.name} started")
             thread.start()
+        print(f"Threads 0-{thread_count-1} started")
         for thread in threads:
             thread.join()
             if self.debug:
                 print(f"{thread.name} joined")
+        print(f"Threads 0-{thread_count - 1} joined")
         for solution in self.solutions:
             if solution.value != 0:
                 non_solutions.append(solution)
