@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
+from typing import Tuple
 
 from cell import Cell
 from board import Board
@@ -16,9 +17,5 @@ class ConstraintSolver(ABC):
     def solve_csp(self, board: Board) -> bool:
         pass
 
-    def print_output(self) -> None:
-        pass
-
-
-
-
+    def print_output(self, board: Board) -> None:
+        print(board)
