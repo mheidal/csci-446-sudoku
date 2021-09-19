@@ -1,75 +1,77 @@
 
 from constrain_solver import *
+from board import *
 
-class BacktrackingArcConsistency(ConstraintSolver):
+class ArcConsistency(ConstraintSolver):
 
     # TODO
     def __init__(self):
         pass
 
     def solve_csp(self, board: Board) -> bool:
-        return self.recursive_backtrack(board)
+        self.steps_taken = 0
+        done = self.recursive_backtrack(board, 0)
+        return done
 
-    def recursive_backtrack(self, board) -> bool:
+    def recursive_backtrack(self, board, depth: int) -> bool:
+        self.steps_taken += 1
+
         status = board.check_success()
         if status == Status.SUCCESS:
-            self.print_output()
+            self.print_output(board)
             return True
         elif status == Status.FAILURE:
             return False
         else:
             order = self.queueing_function(board)
-            for cell, value in order:
+
+            while order != []:
+                cell, value = order.pop()
                 child = deepcopy(board)
-                child.insert_value(cell, value)
+                child.insert_value(cell.location, value)
 
                 if not self.is_arc_consistent(child):
-                    return False
+                    continue
 
-                if self.recursive_backtrack(child):
+                if self.recursive_backtrack(child, depth + 1):
                     return True
 
             return False
 
-
-    # Method: minimum remaining values.
-    # TODO: IMPLEMENT MORE, ASSESS COMPARATIVELY?
-    def queueing_function(self, board: Board) -> List[Cell, int]:
-        temp = []
+    def queueing_function(self, board: Board) -> List[Tuple[Cell, int]]:
+        cell_with_fewest_possible_values: Cell = None
+        fewest_possible_values: float = float('inf')
         for row in board.grid:
             for cell in row:
-                temp.append(deepcopy(cell))
-        sorted(temp, key=lambda x: len(x.possible_values), reversed=False)
+                if len(cell.possible_values) != 0 and len(cell.possible_values) < fewest_possible_values:
+                    cell_with_fewest_possible_values = cell
+                    fewest_possible_values = len(cell.possible_values)
+        output = []
+        for value in cell_with_fewest_possible_values.possible_values:
+            output.append((cell_with_fewest_possible_values, value))
+        return output
 
-        out = []
-        for cell in temp:
-            for val in cell.possible_values:
-                out.append((cell, val))
-        return out
-
-    def is_arc_consistent(self, board: Board, target: Cell) -> Bool:
+    def is_arc_consistent(self, board: Board) -> bool:
         queue: List = []
         for row in board.grid:
-            for entry in row:
-                if cell.value == 0 and ((entry.location[0] == target.location[0])
-                                        or (entry.location[1] == target.location[1])
-                                        or (entry.get_box_index() == target.get_box_index())):
-                    queue.append(deepcopy(target), entry)
+            for cell in row:
+                for other_cell in board.get_cells_with_constraint(cell):
+                    if (other_cell, cell) not in queue:
+                        queue.append((cell, other_cell))
         while queue != []:
             x1, x2 = queue.pop(0)
             if self.remove_inconsistent_values(x1, x2):
-                if len(x1.possible_values == 0):
+                if len(x1.possible_values) == 0:
                     return False
+                for neighbor in board.get_cells_with_constraint(x1):
+                    queue.append((neighbor, x1))
         return True
 
-
-    def remove_inconsistent_values(self, target: Cell, adjacent: Cell) -> Bool:
+    def remove_inconsistent_values(self, target: Cell, adjacent: Cell) -> bool:
         removed: Bool = False
-        valid_adj_assignment_exists: Bool = True
         for x in target.possible_values:
             if adjacent.possible_values == [x]:
-                valid_adj_assignment_exists = False
-            if not valid_adj_assignment_exists:
                 target.possible_values.remove(x)
                 removed = True
+
         return removed
