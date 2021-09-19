@@ -98,7 +98,6 @@ class Board:
         As value approaches 0 the number of violated constraints approaches 0 such that when value is 0, number of violated constraints is 0.
         :return: Number of violated constraints.
         """
-        # max_violated_constraints: int = pow(4, 81)  # 4^81
         violated_constraints: int = 0
         for row in self.grid:
             for cell in row:

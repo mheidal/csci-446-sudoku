@@ -27,40 +27,40 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
         self.debug = False
         self.solutions: List[Board] = []
 
-    def queueing_function(self, board: Board):
-        pass
-
-    def solve_csp(self, board: Board) -> bool:
+    def solve_csp(self, board: Board, *, _threading: bool = False) -> bool:
+        """
+        Implements Simulated Annealing to solve the board Board.
+        :param board: A unsolved sudoku board as a Board
+        :param _threading: A bool to determine whether or not to implement multithreading for this method call.
+        :return:
+        """
         print(self.__class__.__name__)
-        threads: List[Thread] = []
-        non_solutions: List[Board] = []
-        thread_count: int = 25
-        for i in range(0, thread_count):
-            threads.append(threading.Thread(target=self.simulated_annealing, args=(deepcopy(board),),
-                                            name=f"simulated_annealing_thread{i}"))
-        for thread in threads:
-            if self.debug:
-                print(f"{thread.name} started")
-            thread.start()
-        print(f"Threads 0-{thread_count-1} started")
-        for thread in threads:
-            thread.join()
-            if self.debug:
-                print(f"{thread.name} joined")
-        print(f"Threads 0-{thread_count - 1} joined")
-        for solution in self.solutions:
-            if solution.value != 0:
-                non_solutions.append(solution)
-        for board in non_solutions:
-            self.solutions.remove(board)
-        solution_probability: float = len(self.solutions) / len(threads)
-        self.solution = self.solutions[0]
-
-        # self.solution = self.simulated_annealing(board=board)
-        # self.solution = self.simulated_annealing_3(board=board)
-        self.print_output(self.solution)
-        print(f"Probability of generating a solution: {solution_probability} with {thread_count} threads")
-        return True if len(self.solutions) > 0 else False
+        if threading:
+            threads: List[Thread] = []
+            non_solutions: List[Board] = []
+            thread_count: int = 25
+            for i in range(0, thread_count):
+                threads.append(threading.Thread(target=self.simulated_annealing, args=(deepcopy(board),),
+                                                name=f"simulated_annealing_thread{i}"))
+            for thread in threads:
+                thread.start()
+            print(f"Threads 0-{thread_count - 1} started")
+            for thread in threads:
+                thread.join()
+            print(f"Threads 0-{thread_count - 1} joined")
+            for solution in self.solutions:
+                if solution.value != 0:
+                    non_solutions.append(solution)
+            for board in non_solutions:
+                self.solutions.remove(board)
+            solution_probability: float = len(self.solutions) / len(threads)
+            self.solution = self.solutions[0] if len(self.solutions) > 0 else None
+            self.print_output(self.solution)
+            print(f"Probability of generating a solution: {solution_probability} with {thread_count} threads")
+            return True if len(self.solutions) > 0 else False
+        else:
+            self.solution = self.simulated_annealing(deepcopy(board))
+            return True if self.solution.value == 0 else False
 
     @staticmethod
     def starting_board(_board: Board) -> Board:
@@ -100,13 +100,11 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
         for t in range(1, self.number_iterations):
             temperature: float = self.schedule(t)
             if temperature < 1 or t == self.number_iterations - 1 or current_board.value == 0:
-                # print(
-                # f"\nSimulated Annealing\nViolated Constraints: {current_board.value}\nNumber of Iterations: {t}\nCurrent Temperature: {temperature}\n")
                 self.solutions.append(deepcopy(current_board))
-                return current_board  # if current_board.value == 0 else self.simulated_annealing(deepcopy(current_board))
+                return current_board
             next_board: Board = self.random_neighbor(current_board)
             delta_energy: int = (next_board.value - current_board.value) * -1
-            if delta_energy > 0:  # if the number of violated constrains in current is greater than that in next
+            if delta_energy > 0:
                 current_board = next_board
             elif delta_energy != 0:
                 next_board_probability: float = 0
@@ -115,9 +113,7 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
                         exp((-delta_energy) / (k_boltzmann_constant * temperature)))
                 except OverflowError:
                     next_board_probability = 0.01
-                # next_board_probability: float = 0 if (delta_energy == 0) and (temperature < self.starting_temperature/2) else 1 / (exp((-delta_energy) / (k_boltzmann_constant * temperature)))
-                current_board = \
-                    random.choices([current_board, next_board], weights=[1, next_board_probability * 100], k=1)[0]
+                    current_board = random.choices([current_board, next_board], weights=[1, next_board_probability * 100], k=1)[0]
 
     def simulated_annealing_v2(self, board: Board) -> Board:
         k_boltzmann_constant: float = 0.00001
