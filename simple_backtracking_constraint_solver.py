@@ -4,30 +4,29 @@ from board import Board
 
 from cell import Cell
 
-from constrain_solver import ConstraintSolver
+from backtracking_constraint_solver import *
 
 
+class SimpleBacktracking(BacktrackingConstraintSolver):
 
+    def recursive_backtrack(self, board: Board):
+        self.steps_taken += 1
 
-class SimpleBacktrackingConstraintSolver(ConstraintSolver):
+        status = board.check_success()
 
-    def find_empty_cell(self, board: Board):
-        for row in range(9):
-            for col in range(9):
-                print(board.grid[row][col].value)
+        if status == Status.SUCCESS:
+            self.print_output(board)
+            return True
+        elif status == Status.FAILURE:
+            return False
+        else:
+            order = self.queueing_function(board)
 
+            for cell, value in order:
+                child = deepcopy(board)
+                child.insert_value(cell.location, value, False)
 
-    def possible_values(self):
-        pass
+                if self.recursive_backtrack(child):
+                    return True
 
-    def queueing_function(self, board: Board) -> List[Cell, int]:
-        pass
-
-    def solve_csp(self, board: Board) -> bool:
-        return self.back_track({}, board)
-
-SimpleBacktrackingConstraintSolver().find_empty_cell()
-
-
-
-
+            return False

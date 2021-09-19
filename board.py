@@ -190,15 +190,14 @@ class Board:
 
     # Given a target cell, returns all cells which share a constraint with that cell.
     # i.e. all cells in the same row, column or box.
-    # TODO: THIS DOESN'T WORK. PROBLEM WITH THIS METHOD? OR WITH get_cells_in_box MAYBE?
+    # Note: This does return cells which have set values.
     def get_cells_with_constraint(self, target: Cell) -> List[Cell]:
         connected_cells = []
-        constraints = [self.grid[target.location[0]], self.grid[:][target.location[1]],
-                       self.get_cells_in_box(target.get_box_index())]
+        constraints = [self.grid[target.location[0]], self.grid[:,target.location[1]], self.get_cells_in_box(target.get_box_index())]
 
         for constraint in constraints:
             for cell in constraint:
-                if cell is not target:
+                if cell is not target and cell not in connected_cells:
                     connected_cells.append(cell)
 
         return connected_cells
@@ -231,38 +230,15 @@ class Board:
 
         return box
 
-    # TODO: COULD BE A LOT MORE ELEGANT.
-    # TODO: INTEGRATE get_cells_with_constraint
+    #
     def assign_possible_values(self) -> None:
 
         for row in self.grid:
-            reserved_values = []
             for cell in row:
-                if cell.value != 0:
-                    reserved_values.append(cell.value)
-            for cell in row:
-                for reserved_value in reserved_values:
-                    if reserved_value in cell.possible_values:
-                        cell.possible_values.remove(reserved_value)
+                neighbors = self.get_cells_with_constraint(cell)
+                for neighbor in neighbors:
+                    if not neighbor.value == 0:
+                        if neighbor.value in cell.possible_values:
+                            cell.possible_values.remove(neighbor.value)
 
-        for i in range(9):
-            col = self.grid[:, i]
-            reserved_values = []
-            for cell in col:
-                if cell.value != 0:
-                    reserved_values.append(cell.value)
-            for cell in col:
-                for reserved_value in reserved_values:
-                    if reserved_value in cell.possible_values:
-                        cell.possible_values.remove(reserved_value)
-
-        for i in range(9):
-            box = self.get_cells_in_box(i)
-            reserved_values = []
-            for cell in box:
-                if cell.value != 0:
-                    reserved_values.append(cell.value)
-            for cell in box:
-                for reserved_value in reserved_values:
-                    if reserved_value in cell.possible_values:
-                        cell.possible_values.remove(reserved_value)
+        return
