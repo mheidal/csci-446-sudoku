@@ -38,7 +38,7 @@ class ForwardChecking(ConstraintSolver):
 
     #Method: minimum remaining values.
     #TODO: IMPLEMENT MORE, ASSESS COMPARATIVELY?
-    def queueing_function(self, board: Board) -> List[Cell, int]:
+    def queueing_function(self, board: Board) -> List[Tuple[Cell, int]]:
         temp = []
         for row in board.grid:
             for cell in row:
