@@ -98,7 +98,6 @@ class Board:
         As value approaches 0 the number of violated constraints approaches 0 such that when value is 0, number of violated constraints is 0.
         :return: Number of violated constraints.
         """
-        # max_violated_constraints: int = pow(4, 81)  # 4^81
         violated_constraints: int = 0
         for row in self.grid:
             for cell in row:
@@ -116,12 +115,15 @@ class Board:
         return violated_constraints
 
     def cell_value(self, cell: Cell) -> int:
+        """
+        Number of constraints that cell violated.
+        :param cell: Cell to check the number of constrains that it violates
+        :return: Int representing the number of constrains that the Cell cell violates.
+        """
         row: List[Cell] = self.row(cell)
         column: List[Cell] = self.column(cell)
         block: List[Cell] = self.block(cell)
         violated_constraints: int = 0
-        # print(cell)
-        # print(self)
         for other_cell in row:
             if other_cell.get_col_index() != cell.get_col_index() and cell.value == other_cell.value:
                 violated_constraints = violated_constraints + 1
@@ -136,6 +138,11 @@ class Board:
         return violated_constraints
 
     def read_in_csv(self, board_file_name: str) -> None:
+        """
+        Serializes a Board based on a csv representing a Sudoku board.
+        :param board_file_name: Name of the csv file to serialize in the sudoku_boards directory.
+        :return: None.
+        """
         if platform.system() == 'Windows':
             input_file: str = f"{os.getcwd()}\\sudoku_boards\\{board_file_name}.csv"
         else:
@@ -204,6 +211,10 @@ class Board:
         return connected_cells
 
     def get_box_list(self) -> List[List[Cell]]:
+        """
+        All of the boxes in this Board.
+        :return: A List of all of the boxes in this Board.
+        """
         return [self.get_cells_in_box(0), self.get_cells_in_box(1), self.get_cells_in_box(2), self.get_cells_in_box(3), self.get_cells_in_box(4), self.get_cells_in_box(5), self.get_cells_in_box(6), self.get_cells_in_box(7), self.get_cells_in_box(8)]
 
     def get_cells_in_box(self, index: int) -> List[
