@@ -34,7 +34,7 @@ class Status(Enum):
 class Board:
     domain: List[int] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-    def __init__(self, *, board_file_name: str = "Easy-P1",  grid=None):
+    def __init__(self, *, board_file_name: str = "Easy-P1", grid=None):
         self.board_file_name: str = board_file_name
         if grid is None:
             self.grid = np.zeros([9, 9], dtype=Cell)
@@ -42,7 +42,7 @@ class Board:
         else:
             self.grid = deepcopy(grid)
 
-    def __getitem__(self, row): # TODO: Broken after implementation of __str__
+    def __getitem__(self, row):  # TODO: Broken after implementation of __str__
         """
         Allows Board to be subscriptable.
         Ex:
@@ -108,7 +108,8 @@ class Board:
                     if other_cell.get_row_index() != cell.get_row_index() and cell.value == other_cell.value:
                         violated_constraints = violated_constraints + 1
                 for other_cell in self.block(cell):
-                    if (not (other_cell.get_row_index() == cell.get_row_index() and other_cell.get_col_index() == cell.get_col_index())) and cell.value == other_cell.value:
+                    if (not (
+                            other_cell.get_row_index() == cell.get_row_index() and other_cell.get_col_index() == cell.get_col_index())) and cell.value == other_cell.value:
                         violated_constraints = violated_constraints + 1
                 if cell.value not in Board.domain:
                     violated_constraints = violated_constraints + 1
@@ -131,7 +132,8 @@ class Board:
             if other_cell.get_row_index() != cell.get_row_index() and cell.value == other_cell.value:
                 violated_constraints = violated_constraints + 1
         for other_cell in block:
-            if (not (other_cell.get_row_index() == cell.get_row_index() and other_cell.get_col_index() == cell.get_col_index())) and cell.value == other_cell.value:
+            if (not (
+                    other_cell.get_row_index() == cell.get_row_index() and other_cell.get_col_index() == cell.get_col_index())) and cell.value == other_cell.value:
                 violated_constraints = violated_constraints + 1
         if cell.value not in Board.domain:
             violated_constraints = violated_constraints + 1
@@ -201,7 +203,8 @@ class Board:
     # Note: This does return cells which have set values.
     def get_cells_with_constraint(self, target: Cell) -> List[Cell]:
         connected_cells = []
-        constraints = [self.grid[target.location[0]], self.grid[:,target.location[1]], self.get_cells_in_box(target.get_box_index())]
+        constraints = [self.grid[target.location[0]], self.grid[:, target.location[1]],
+                       self.get_cells_in_box(target.get_box_index())]
 
         for constraint in constraints:
             for cell in constraint:
@@ -215,7 +218,9 @@ class Board:
         All of the boxes in this Board.
         :return: A List of all of the boxes in this Board.
         """
-        return [self.get_cells_in_box(0), self.get_cells_in_box(1), self.get_cells_in_box(2), self.get_cells_in_box(3), self.get_cells_in_box(4), self.get_cells_in_box(5), self.get_cells_in_box(6), self.get_cells_in_box(7), self.get_cells_in_box(8)]
+        return [self.get_cells_in_box(0), self.get_cells_in_box(1), self.get_cells_in_box(2), self.get_cells_in_box(3),
+                self.get_cells_in_box(4), self.get_cells_in_box(5), self.get_cells_in_box(6), self.get_cells_in_box(7),
+                self.get_cells_in_box(8)]
 
     def get_cells_in_box(self, index: int) -> List[
         Cell]:  # TODO @Mike why dont you just take in a row and column and return the block based on that rather than index?

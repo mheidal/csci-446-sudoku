@@ -35,10 +35,10 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
         :return: bool representing the success of solving board before the Temperature is less than 1 or the preset number of iterations is reached. If a solution is found returns True otherwise False.
         """
         print(self.__class__.__name__)
-        if threading:
+        if threading is True:
             threads: List[Thread] = []
             non_solutions: List[Board] = []
-            thread_count: int = 25
+            thread_count: int = 4
             for i in range(0, thread_count):
                 threads.append(threading.Thread(target=self.simulated_annealing, args=(deepcopy(board),),
                                                 name=f"simulated_annealing_thread{i}"))
