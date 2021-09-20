@@ -85,7 +85,7 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
         current_board = board
         for t in range(1, self.number_iterations):
             temperature: float = self.schedule(t)
-            if temperature < 1 or t == self.number_iterations - 1 or current_board.value == 0:
+            if temperature < 0.0000001 or t == self.number_iterations - 1 or current_board.value == 0:
                 # print(
                 # f"\nSimulated Annealing\nViolated Constraints: {current_board.value}\nNumber of Iterations: {t}\nCurrent Temperature: {temperature}\n")
                 if current_board.value == 0:
