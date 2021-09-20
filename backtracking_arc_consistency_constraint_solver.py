@@ -8,10 +8,8 @@ from board import *
 # left for them to choose.
 class ArcConsistency(BacktrackingConstraintSolver):
 
-    def recursive_backtrack(self, board) -> bool:
+    def recursive_backtrack(self, board: Board, method: QueuingType) -> bool:
         self.steps_taken += 1
-        if self.steps_taken % 100 == 0:
-            print(self.steps_taken)
         status = board.check_success()
         if status == Status.SUCCESS:
             self.print_output(board)
@@ -19,7 +17,7 @@ class ArcConsistency(BacktrackingConstraintSolver):
         elif status == Status.FAILURE:
             return False
         else:
-            order = self.queueing_function(board)
+            order = self.queueing_function(board, method)
             while order != []:
                 cell, value = order.pop()
                 child = deepcopy(board)
@@ -28,7 +26,7 @@ class ArcConsistency(BacktrackingConstraintSolver):
                 if not self.is_arc_consistent(child):
                     continue
 
-                if self.recursive_backtrack(child):
+                if self.recursive_backtrack(child, method):
                     return True
 
             return False

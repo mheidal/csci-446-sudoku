@@ -22,7 +22,7 @@ class ForwardChecking(BacktrackingConstraintSolver):
     # - board: Board -- a potential board state to be analyzed and either accepted, discarded or inserted into.
     # Returns:
     # - bool -- represents whether or not this board is or is a step on the path to a successful board state.
-    def recursive_backtrack(self, board: Board) -> bool:
+    def recursive_backtrack(self, board: Board, method: QueuingType) -> bool:
         self.steps_taken += 1
 
         status = board.check_success()
@@ -32,7 +32,7 @@ class ForwardChecking(BacktrackingConstraintSolver):
         elif status == Status.FAILURE:
             return False
         else:
-            order = self.queueing_function(board)
+            order = self.queueing_function(board, method)
             for cell, value in order:
                 child = deepcopy(board)
                 child.insert_value(cell, value, False)
@@ -42,6 +42,6 @@ class ForwardChecking(BacktrackingConstraintSolver):
                         if entry.value == 0 and len(entry.possible_values) == 0:
                             return False
 
-                if self.recursive_backtrack(child):
+                if self.recursive_backtrack(child, method):
                     return True
             return False
