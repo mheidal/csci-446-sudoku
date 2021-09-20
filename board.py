@@ -4,27 +4,24 @@ from enum import Enum
 import platform
 from typing import List
 from typing import Tuple
-
+from cell import Cell
 import numpy as np
 
 # Diagram of the board:
 # Numbers within cells correspond to the index of the 'boxes', which are the cell containing the number and the eight
 # surrounding cells.
-#
-#        0 1 2 3 4 5 6 7 8
-#        _ _ _ _ _ _ _ _ _
-#     0 |_|_|_|_|_|_|_|_|_|
-#     1 |_|0|_|_|1|_|_|2|_|
-#     2 |_|_|_|_|_|_|_|_|_|
-#     3 |_|_|_|_|_|_|_|_|_|
-#     4 |_|3|_|_|4|_|_|5|_|
-#     5 |_|_|_|_|_|_|_|_|_|
-#     6 |_|_|_|_|_|_|_|_|_|
-#     7 |_|6|_|_|7|_|_|8|_|
-#     8 |_|_|_|_|_|_|_|_|_|
-
-
-from cell import Cell
+#     0 1 2   3 4 5   6 7 8
+#  0  0 0 0 | 1 1 1 | 2 2 2
+#  1  0 0 0 | 1 1 1 | 2 2 2
+#  2  0 0 0 | 1 1 1 | 2 2 2
+#     ------|-------|------
+#  3  3 3 3 | 4 4 4 | 5 5 5
+#  4  3 3 3 | 4 4 4 | 5 5 5
+#  5  3 3 3 | 4 4 4 | 5 5 5
+#     ------|-------|------
+#  6  6 6 6 | 7 7 7 | 8 8 8
+#  7  6 6 6 | 7 7 7 | 8 8 8
+#  8  6 6 6 | 7 7 7 | 8 8 8
 
 
 class Status(Enum):
