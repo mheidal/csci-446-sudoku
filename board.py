@@ -170,8 +170,12 @@ class Board:
     #                                   values following the value insertion. Optional, defaults to True.
     # Returns: None.
     def insert_value(self, cell: Cell, val: int, update_possible_values: bool = True) -> None:
-        cell.value = val
-        cell.possible_values = []
+        x: int = cell.location[0]
+        y: int = cell.location[1]
+
+        target: Cell = self.grid[x][y]
+        target.value = val
+        target.possible_values = []
 
         if update_possible_values:
             self.assign_possible_values()
