@@ -22,7 +22,7 @@ class SimpleBacktracking(BacktrackingConstraintSolver):
     # - board: Board -- a potential board state to be analyzed and either accepted, discarded or inserted into.
     # Returns:
     # - bool -- represents whether or not this board is or is a step on the path to a successful board state.
-    def recursive_backtrack(self, board: Board) -> bool:
+    def recursive_backtrack(self, board: Board, method: QueuingType) -> bool:
         self.steps_taken += 1
 
         status = board.check_success()
@@ -33,27 +33,11 @@ class SimpleBacktracking(BacktrackingConstraintSolver):
         elif status == Status.FAILURE:
             return False
         else:
-            order = self.queueing_function(board)
+            order = self.queueing_function(board, method)
             for cell, value in order:
                 child = deepcopy(board)
                 child.insert_value(cell, value, False)
-                if self.recursive_backtrack(child):
+                if self.recursive_backtrack(child, method):
                     return True
 
             return False
-
-    # A helper method which creates a list of cell-value pairs which the main method will attempt to insert into a board
-    # state. Returns a list containing many copies of the same cell paired with the values 1 through 9. The cell
-    # returned is the first cell found to have no value assigned to it, going row-by-row and column-by-column.
-    # Parameters:
-    # - board: Board -- a board state to select a cell from.
-    # Returns:
-    # - queue: List[Tuple[Cell, int]] -- a list of cell-value pairs.
-    def queueing_function(self, board: Board) -> List[Tuple[Cell, int]]:
-        queue = []
-        for row in board.grid:
-            for cell in row:
-                if cell.value == 0:
-                    for i in range(1, 10, 1):
-                        queue.append((cell, i))
-                    return queue
