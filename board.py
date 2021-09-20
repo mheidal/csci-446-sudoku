@@ -33,7 +33,7 @@ class Status(Enum):
 class Board:
     domain: List[int] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-    def __init__(self, *, board_file_name: str = "Easy-P1",  grid=None):
+    def __init__(self, *, board_file_name: str = "Easy-P1", grid=None):
         self.board_file_name: str = board_file_name
         if grid is None:
             self.grid = np.zeros([9, 9], dtype=Cell)
@@ -41,7 +41,7 @@ class Board:
         else:
             self.grid = deepcopy(grid)
 
-    def __getitem__(self, row): # TODO: Broken after implementation of __str__
+    def __getitem__(self, row):
         """
         Allows Board to be subscriptable.
         Ex:
@@ -233,9 +233,9 @@ class Board:
         All of the boxes in this Board.
         :return: A List of all of the boxes in this Board.
         """
-        return [self.get_cells_in_box(0), self.get_cells_in_box(1), self.get_cells_in_box(2),
-                self.get_cells_in_box(3), self.get_cells_in_box(4), self.get_cells_in_box(5),
-                self.get_cells_in_box(6), self.get_cells_in_box(7), self.get_cells_in_box(8)]
+        return [self.get_cells_in_box(0), self.get_cells_in_box(1), self.get_cells_in_box(2), self.get_cells_in_box(3),
+                self.get_cells_in_box(4), self.get_cells_in_box(5), self.get_cells_in_box(6), self.get_cells_in_box(7),
+                self.get_cells_in_box(8)]
 
     # A utility method which returns a list of all cells in a particular box.
     # Parameters:

@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import List
 
 from board import Board
@@ -13,7 +14,11 @@ def main():
     for board_file in board_names:
         board: Board = Board(board_file_name=board_file)
         simulated_annealing: LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver = LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver()
-        solved: bool = simulated_annealing.solve_csp(board=board, _threading=True)
+        solved: bool = simulated_annealing.solve_csp(board=deepcopy(board), _threading=True)
+
+    # board: Board = Board()
+    # simulated_annealing: LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver = LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver()
+    # solved: bool = simulated_annealing.solve_csp(board=deepcopy(board), _threading=True)
 
 
 if __name__ == '__main__':
