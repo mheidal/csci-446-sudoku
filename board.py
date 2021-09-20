@@ -8,6 +8,8 @@ from typing import Tuple
 import numpy as np
 
 # Diagram of the board:
+# Numbers within cells correspond to the index of the 'boxes', which are the cell containing the number and the eight
+# surrounding cells.
 #
 #        0 1 2 3 4 5 6 7 8
 #        _ _ _ _ _ _ _ _ _
@@ -160,13 +162,16 @@ class Board:
         self.assign_possible_values()
         return
 
+    # Inserts a value into the board. Optionally updates board state by calling update_possible_values.
+    # Parameters:
+    # - cell: Cell -- the cell to which the value is to be assigned.
+    # - val: int -- the value to assign to that cell.
+    # - update_possible_values: bool -- whether or not to update the board state by updating every cell's possible
+    #                                   values following the value insertion. Optional, defaults to True.
+    # Returns: None.
     def insert_value(self, cell: Cell, val: int, update_possible_values: bool = True) -> None:
-        x: int = cell.location[0]
-        y: int = cell.location[1]
-
-        target: Cell = self.grid[x][y]
-        target.value = val
-        target.possible_values = []
+        cell.value = val
+        cell.possible_values = []
 
         if update_possible_values:
             self.assign_possible_values()
@@ -177,6 +182,9 @@ class Board:
 
     # Checks whether the board is in a success state (all rows, columns, and boxes full and with no constraints),
     # a failure state (any constraint is violated), or a continue state (not failure and the board is incomplete)
+    # Parameters: None.
+    # Returns:
+    # - Status: a Status enumerated value representing a Success state, a Failure state, or a Continue state.
     def check_success(self) -> Status:
 
         cont: bool = False
@@ -199,6 +207,10 @@ class Board:
     # Given a target cell, returns all cells which share a constraint with that cell.
     # i.e. all cells in the same row, column or box.
     # Note: This does return cells which have set values.
+    # Parameters:
+    # - target: Cell - a cell in this board. Method returns all cells which share a constraint with that cell.
+    # Returns:
+    # - List[Cell] -- a list of cells in this board which share a constraint with target.
     def get_cells_with_constraint(self, target: Cell) -> List[Cell]:
         connected_cells = []
         constraints = [self.grid[target.location[0]], self.grid[:,target.location[1]], self.get_cells_in_box(target.get_box_index())]
@@ -210,15 +222,26 @@ class Board:
 
         return connected_cells
 
+    # A utility method which returns a list containing a list of lists, each of which corresponds to all cells in a
+    # particular 'box', which is one of the three constraints in the sudoku board.
+    # Parameters: None.
+    # Returns:
+    # - List[List[Cell]]: A list of lists of cells, all of which share a constraint.
     def get_box_list(self) -> List[List[Cell]]:
         """
         All of the boxes in this Board.
         :return: A List of all of the boxes in this Board.
         """
-        return [self.get_cells_in_box(0), self.get_cells_in_box(1), self.get_cells_in_box(2), self.get_cells_in_box(3), self.get_cells_in_box(4), self.get_cells_in_box(5), self.get_cells_in_box(6), self.get_cells_in_box(7), self.get_cells_in_box(8)]
+        return [self.get_cells_in_box(0), self.get_cells_in_box(1), self.get_cells_in_box(2),
+                self.get_cells_in_box(3), self.get_cells_in_box(4), self.get_cells_in_box(5),
+                self.get_cells_in_box(6), self.get_cells_in_box(7), self.get_cells_in_box(8)]
 
-    def get_cells_in_box(self, index: int) -> List[
-        Cell]:  # TODO @Mike why dont you just take in a row and column and return the block based on that rather than index?
+    # A utility method which returns a list of all cells in a particular box.
+    # Parameters:
+    # - index: int -- the index of the box. From left to right, top to bottom, boxes are numbered 0 through 8.
+    # Returns:
+    # - List[Cell] -- A list of cells in that box.
+    def get_cells_in_box(self, index: int) -> List[Cell]:
         rows = []
         cols = []
         box = []
@@ -242,7 +265,11 @@ class Board:
 
         return box
 
-    #
+    # Assigns values to the domain of each cell without a defined value in the board.
+    # This is performed by iterating through every cell and iterating through every neighbor of each cell without
+    # a defined value. If any neighbor has a defined value, that value is removed from the cell's domain.
+    # Parameters: None.
+    # Returns: None.
     def assign_possible_values(self) -> None:
 
         for row in self.grid:
