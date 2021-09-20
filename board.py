@@ -160,9 +160,9 @@ class Board:
         self.assign_possible_values()
         return
 
-    def insert_value(self, location: Tuple[int, int], val: int, update_possible_values: bool = True) -> None:
-        x: int = location[0]
-        y: int = location[1]
+    def insert_value(self, cell: Cell, val: int, update_possible_values: bool = True) -> None:
+        x: int = cell.location[0]
+        y: int = cell.location[1]
 
         target: Cell = self.grid[x][y]
         target.value = val
