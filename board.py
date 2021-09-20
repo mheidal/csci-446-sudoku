@@ -181,7 +181,7 @@ class Board:
                     continue
                 neighbors = self.get_cells_with_constraint(cell)
                 for neighbor in neighbors:
-                    if cell.value == neighbor.value and cell.value != 0:
+                    if cell.value == neighbor.value and cell.value != 0 and cell is not neighbor:
                         return Status.FAILURE
 
         if cont:
