@@ -1,5 +1,5 @@
 from board import *
-from constrain_solver import *
+from constraint_solver import *
 
 
 # An abstract class which solves sudoku puzzles using backtracking depth-first search via recursion.

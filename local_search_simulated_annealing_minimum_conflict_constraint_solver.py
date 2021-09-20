@@ -4,7 +4,7 @@ from random import randrange
 from math import exp
 from threading import Thread
 
-from constrain_solver import *
+from constraint_solver import *
 from board import *
 
 

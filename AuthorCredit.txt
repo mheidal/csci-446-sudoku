@@ -1,0 +1,13 @@
+Authors of this project are Noah Cunningham, Michael Heidal, Walker Ward.
+
+backtracking_arc_consistency_constraint_solver.py                       : Michael Heidal
+backtracking_constraint_solver.py                                       : Michael Heidal
+backtracking_forward_checking_constraint_solver.py                      : Michael Heidal
+board.py                                                                : Michael Heidal, Walker Ward
+cell.py                                                                 : Michael Heidal, Walker Ward
+constraint_solver.py                                                    : Walker Ward
+local_search_genetic_penalty_fx_tourny_selection_constraint_solver.py   : Noah Cunningham
+local_search_simulated_annealing_minimum_conflict_constraint_solver.py  : Walker Ward
+main.py                                                                 : Walker Ward
+README.md                                                               : Michael Heidal
+simple_backtracking_constraint_solver.py                                : Michael Heidal
