@@ -4,6 +4,17 @@ from typing import Tuple
 
 class Cell:
 
+    # Constructor method. Assigns a location, a value, and a boolean to each cell.
+    # By default, a cell has a value set to 0 and a 'preset' boolean set to False. This indicates that the cell
+    # has not been assigned a value from the domain and that the cell is not one of the cells whose values are defined
+    # in the initial board state.
+    # Also initializes the possible_values attribute, which is a list of integers containing the domain of the cell.
+    # Parameters:
+    # - loc: Tuple[int, int] -- a pair of integers indicating x and y coordinates in the board's grid.
+    # - val: int -- a value to be assigned to this cell. Default is 0 (unassigned).
+    # - preset: bool -- indicates whether the cell is one of the variables set in the initial state. Default is False.
+    # Returns:
+    # - This cell object.
     def __init__(self, loc: Tuple[int, int], val: int = 0, preset: bool = False):
         self.location: Tuple[int, int] = loc
         self.value = val
@@ -19,17 +30,32 @@ class Cell:
         else:
             return str(self.value)
 
-    def set_possible_values(self, poss) -> None:
+    # Utility method; sets the value of the possible_values list.
+    # Parameters:
+    # - poss: List[int] -- the new domain.
+    # Returns: None.
+    def set_possible_values(self, poss: List[int]) -> None:
         self.possible_values = poss
         return
 
+    # Utility method; gets the index of the row containing this cell.
+    # Parameters: None.
+    # Returns:
+    # - int: the index of the row containing this cell.
     def get_row_index(self) -> int:
         return self.location[0]
 
+    # Utility method; gets the index of the column containing this cell.
+    # Parameters: None.
+    # Returns:
+    # - int: the index of the column containing this cell.
     def get_col_index(self) -> int:
         return self.location[1]
 
-    # TODO: THERE'S A MORE ELEGANT WAY TO DO THIS
+    # Utility method; gets the index of the box containing this cell.
+    # Parameters: None.
+    # Returns:
+    # - int: the index of the box containing this cell.
     def get_box_index(self) -> int:
 
         if int(self.location[0] / 3) == 0:

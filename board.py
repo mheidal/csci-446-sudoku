@@ -4,25 +4,24 @@ from enum import Enum
 import platform
 from typing import List
 from typing import Tuple
-
+from cell import Cell
 import numpy as np
 
 # Diagram of the board:
-#
-#        0 1 2 3 4 5 6 7 8
-#        _ _ _ _ _ _ _ _ _
-#     0 |_|_|_|_|_|_|_|_|_|
-#     1 |_|0|_|_|1|_|_|2|_|
-#     2 |_|_|_|_|_|_|_|_|_|
-#     3 |_|_|_|_|_|_|_|_|_|
-#     4 |_|3|_|_|4|_|_|5|_|
-#     5 |_|_|_|_|_|_|_|_|_|
-#     6 |_|_|_|_|_|_|_|_|_|
-#     7 |_|6|_|_|7|_|_|8|_|
-#     8 |_|_|_|_|_|_|_|_|_|
-
-
-from cell import Cell
+# Numbers within cells correspond to the index of the 'boxes', which are the cell containing the number and the eight
+# surrounding cells.
+#     0 1 2   3 4 5   6 7 8
+#  0  0 0 0 | 1 1 1 | 2 2 2
+#  1  0 0 0 | 1 1 1 | 2 2 2
+#  2  0 0 0 | 1 1 1 | 2 2 2
+#     ------|-------|------
+#  3  3 3 3 | 4 4 4 | 5 5 5
+#  4  3 3 3 | 4 4 4 | 5 5 5
+#  5  3 3 3 | 4 4 4 | 5 5 5
+#     ------|-------|------
+#  6  6 6 6 | 7 7 7 | 8 8 8
+#  7  6 6 6 | 7 7 7 | 8 8 8
+#  8  6 6 6 | 7 7 7 | 8 8 8
 
 
 class Status(Enum):
@@ -42,7 +41,7 @@ class Board:
         else:
             self.grid = deepcopy(grid)
 
-    def __getitem__(self, row):  # TODO: Broken after implementation of __str__
+    def __getitem__(self, row):
         """
         Allows Board to be subscriptable.
         Ex:
@@ -108,8 +107,7 @@ class Board:
                     if other_cell.get_row_index() != cell.get_row_index() and cell.value == other_cell.value:
                         violated_constraints = violated_constraints + 1
                 for other_cell in self.block(cell):
-                    if (not (
-                            other_cell.get_row_index() == cell.get_row_index() and other_cell.get_col_index() == cell.get_col_index())) and cell.value == other_cell.value:
+                    if (not (other_cell.get_row_index() == cell.get_row_index() and other_cell.get_col_index() == cell.get_col_index())) and cell.value == other_cell.value:
                         violated_constraints = violated_constraints + 1
                 if cell.value not in Board.domain:
                     violated_constraints = violated_constraints + 1
@@ -132,8 +130,7 @@ class Board:
             if other_cell.get_row_index() != cell.get_row_index() and cell.value == other_cell.value:
                 violated_constraints = violated_constraints + 1
         for other_cell in block:
-            if (not (
-                    other_cell.get_row_index() == cell.get_row_index() and other_cell.get_col_index() == cell.get_col_index())) and cell.value == other_cell.value:
+            if (not (other_cell.get_row_index() == cell.get_row_index() and other_cell.get_col_index() == cell.get_col_index())) and cell.value == other_cell.value:
                 violated_constraints = violated_constraints + 1
         if cell.value not in Board.domain:
             violated_constraints = violated_constraints + 1
@@ -162,9 +159,16 @@ class Board:
         self.assign_possible_values()
         return
 
-    def insert_value(self, location: Tuple[int, int], val: int, update_possible_values: bool = True) -> None:
-        x: int = location[0]
-        y: int = location[1]
+    # Inserts a value into the board. Optionally updates board state by calling update_possible_values.
+    # Parameters:
+    # - cell: Cell -- the cell to which the value is to be assigned.
+    # - val: int -- the value to assign to that cell.
+    # - update_possible_values: bool -- whether or not to update the board state by updating every cell's possible
+    #                                   values following the value insertion. Optional, defaults to True.
+    # Returns: None.
+    def insert_value(self, cell: Cell, val: int, update_possible_values: bool = True) -> None:
+        x: int = cell.location[0]
+        y: int = cell.location[1]
 
         target: Cell = self.grid[x][y]
         target.value = val
@@ -179,6 +183,9 @@ class Board:
 
     # Checks whether the board is in a success state (all rows, columns, and boxes full and with no constraints),
     # a failure state (any constraint is violated), or a continue state (not failure and the board is incomplete)
+    # Parameters: None.
+    # Returns:
+    # - Status: a Status enumerated value representing a Success state, a Failure state, or a Continue state.
     def check_success(self) -> Status:
 
         cont: bool = False
@@ -190,7 +197,7 @@ class Board:
                     continue
                 neighbors = self.get_cells_with_constraint(cell)
                 for neighbor in neighbors:
-                    if cell.value == neighbor.value and cell.value != 0:
+                    if cell.value == neighbor.value and cell.value != 0 and cell is not neighbor:
                         return Status.FAILURE
 
         if cont:
@@ -201,10 +208,13 @@ class Board:
     # Given a target cell, returns all cells which share a constraint with that cell.
     # i.e. all cells in the same row, column or box.
     # Note: This does return cells which have set values.
+    # Parameters:
+    # - target: Cell - a cell in this board. Method returns all cells which share a constraint with that cell.
+    # Returns:
+    # - List[Cell] -- a list of cells in this board which share a constraint with target.
     def get_cells_with_constraint(self, target: Cell) -> List[Cell]:
         connected_cells = []
-        constraints = [self.grid[target.location[0]], self.grid[:, target.location[1]],
-                       self.get_cells_in_box(target.get_box_index())]
+        constraints = [self.grid[target.location[0]], self.grid[:,target.location[1]], self.get_cells_in_box(target.get_box_index())]
 
         for constraint in constraints:
             for cell in constraint:
@@ -213,6 +223,11 @@ class Board:
 
         return connected_cells
 
+    # A utility method which returns a list containing a list of lists, each of which corresponds to all cells in a
+    # particular 'box', which is one of the three constraints in the sudoku board.
+    # Parameters: None.
+    # Returns:
+    # - List[List[Cell]]: A list of lists of cells, all of which share a constraint.
     def get_box_list(self) -> List[List[Cell]]:
         """
         All of the boxes in this Board.
@@ -222,8 +237,12 @@ class Board:
                 self.get_cells_in_box(4), self.get_cells_in_box(5), self.get_cells_in_box(6), self.get_cells_in_box(7),
                 self.get_cells_in_box(8)]
 
-    def get_cells_in_box(self, index: int) -> List[
-        Cell]:  # TODO @Mike why dont you just take in a row and column and return the block based on that rather than index?
+    # A utility method which returns a list of all cells in a particular box.
+    # Parameters:
+    # - index: int -- the index of the box. From left to right, top to bottom, boxes are numbered 0 through 8.
+    # Returns:
+    # - List[Cell] -- A list of cells in that box.
+    def get_cells_in_box(self, index: int) -> List[Cell]:
         rows = []
         cols = []
         box = []
@@ -247,7 +266,11 @@ class Board:
 
         return box
 
-    #
+    # Assigns values to the domain of each cell without a defined value in the board.
+    # This is performed by iterating through every cell and iterating through every neighbor of each cell without
+    # a defined value. If any neighbor has a defined value, that value is removed from the cell's domain.
+    # Parameters: None.
+    # Returns: None.
     def assign_possible_values(self) -> None:
 
         for row in self.grid:
