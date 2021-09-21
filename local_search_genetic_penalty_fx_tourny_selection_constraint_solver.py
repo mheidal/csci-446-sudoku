@@ -63,7 +63,9 @@ class GA():
         fit_prob_list = []
         """for loop that inserts probabilities of each board into fit_prob_list"""
         for i in range(len(fit_list)):
-            fit_prob_list.insert(i, ((self.popsize**2)/len(fit_list))-(i/2))
+            """anohter way i did probability"""
+            #fit_prob_list.insert(i, ((1/fit_list[i])/total_fit) * 10000)\
+            fit_prob_list.insert(i, self.popsize - (i/2))
         """combatant and gladiator variables to select boards for the tournamnet"""
         combatant = random.choices(sorted_pop, weights=fit_prob_list, k=1)[0]
         gladiator = random.choices(sorted_pop, weights=fit_prob_list, k=1)[0]
@@ -76,7 +78,7 @@ class GA():
         else:
             return combatant
 
-    """other tournamnet selction method, wanted to change my startegy"""
+    """other tournamnet selction method, tried another startegy"""
     # def tournamnet_selection(self, fit_dict: dict):
     #     """i use pop and fit_list to retrive keys and values from fit_dict"""
     #     pop = list(fit_dict.keys())
@@ -172,7 +174,7 @@ class GA():
     def __init__(self):
         """creates a board, sets a popsize, creats gen variable, creates population and the the pop_vals"""
         self.used_list = []
-        self.B: Board = Board(board_file_name="Easy-P2")
+        self.B: Board = Board(board_file_name="Hard-P3")
         self.popsize: int = 30
         gen = 0
         self.pop = self.population(self.B)
@@ -180,13 +182,14 @@ class GA():
 
         """while loop that runs until a boards conflicts are 0"""
         while(min(pop_val) != 0):
+            min_val = min(pop_val)
+            print(min_val)
             fit_dict = self.fitness(self.pop)
             self.pop = self.replace(pop_val, fit_dict)
             pop_val = self.update_pop_val(self.pop)
             """adds one to gen at the end of loop"""
             gen = gen + 1
-            #print("gen", gen)
-            min_val = min(pop_val)
+            print("gen", gen)
         print("Total generaqtions: ", gen)
         print(self.pop[pop_val.index(0)].__str__(), gen)
 
