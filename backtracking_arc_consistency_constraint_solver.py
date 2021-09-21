@@ -8,6 +8,9 @@ from board import *
 # left for them to choose.
 class ArcConsistency(BacktrackingConstraintSolver):
 
+    def __str__(self):
+        return "Arc consistency backtracking"
+
     def recursive_backtrack(self, board: Board, method: QueuingType) -> bool:
         self.steps_taken += 1
         status = board.check_success()

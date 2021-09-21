@@ -7,6 +7,9 @@ from board import *
 # values left for it to choose.
 class ForwardChecking(BacktrackingConstraintSolver):
 
+    def __str__(self):
+        return "Forward checking backtracking"
+
     # Implementation of abstract method from parent class. This method:
     # 1. Tests if the board state it is given as an argument is in a success state, a failure state, or neither.
     #    If the board is in a success state, it returns True; if the board is in a failure state, it returns False.
