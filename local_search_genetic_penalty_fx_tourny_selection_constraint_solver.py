@@ -2,8 +2,9 @@ from board import Board
 import numpy as np
 import copy
 import random
+from constrain_solver import ConstraintSolver
 
-class GA():
+class GA(ConstraintSolver):
 
     def random_board(self, board: Board):
         """ generates 1 random baord"""
@@ -193,8 +194,10 @@ class GA():
         print("Total generaqtions: ", gen)
         print(self.pop[pop_val.index(0)].__str__(), gen)
 
+    def solve_csp(self, board: Board) -> bool:
+        GA()
+        return True
 
-run = GA()
 
 
 
