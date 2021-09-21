@@ -4,18 +4,39 @@ from typing import List
 from board import Board
 from local_search_simulated_annealing_minimum_conflict_constraint_solver import \
     LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver
+from board import *
+from backtracking_constraint_solver import *
+from simple_backtracking_constraint_solver import *
+from backtracking_forward_checking_constraint_solver import *
+from backtracking_arc_consistency_constraint_solver import *
+from cell import *
 
 
 def main():
-    # board_names: List[str] = ["Easy-P1", "Easy-P2", "Easy-P3", "Easy-P4", "Easy-P5",
-    #                           "Med-P1", "Med-P2", "Med-P3", "Med-P4", "Med-P5",
-    #                           "Hard-P1", "Hard-P2", "Hard-P3", "Hard-P4", "Hard-P5",
-    #                           "Evil-P1", "Evil-P2", "Evil-P3", "Evil-P4", "Evil-P5"]
-    board_names: List[str] = ["Med-P5"]
-    for board_file in board_names:
-        board: Board = Board(board_file_name=board_file)
-        simulated_annealing: LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver = LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver()
-        solved: bool = simulated_annealing.solve_csp(board=deepcopy(board), _threading=True)
+
+    solvers = [SimpleBacktracking, ForwardChecking, ArcConsistency,
+               LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver]
+    # TODO: GENETIC ALGORITHM CLASS
+    for solver in solvers:
+        if solver is SimpleBacktracking:
+            board_names: List[str] = ["Easy-P1", "Easy-P2", "Easy-P3", "Easy-P4", "Easy-P5",
+                                      "Med-P1", "Med-P2", "Med-P3", "Med-P4", "Med-P5"]
+        else:
+            board_names: List[str] = ["Easy-P1", "Easy-P2", "Easy-P3", "Easy-P4", "Easy-P5",
+                                      "Med-P1", "Med-P2", "Med-P3", "Med-P4", "Med-P5",
+                                      "Hard-P1", "Hard-P2", "Hard-P3", "Hard-P4", "Hard-P5",
+                                      "Evil-P1", "Evil-P2", "Evil-P3", "Evil-P4", "Evil-P5"]
+        for board_name in board_names:
+            print(board_name)
+            csp_solver = solver()
+            print(csp_solver)
+            board = Board(board_file_name = board_name)
+            csp_solver.solve_csp(board)
+
+            print()
+            print('----')
+            print()
+
 
     # board: Board = Board()
     # simulated_annealing: LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver = LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver()

@@ -27,6 +27,9 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
         self.debug = False
         self.solutions: List[Board] = []
 
+    def __str__(self):
+        return "Simulated annealing"
+
     def solve_csp(self, board: Board, *, _threading: bool = False) -> bool:
         """
         Implements Simulated Annealing to solve the board Board.
