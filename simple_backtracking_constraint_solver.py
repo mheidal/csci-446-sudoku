@@ -27,7 +27,7 @@ class SimpleBacktracking(BacktrackingConstraintSolver):
     def recursive_backtrack(self, board: Board, method: QueuingType) -> bool:
         self.steps_taken += 1
 
-        print(board)
+        #print(board)
 
         status = board.check_success()
 
