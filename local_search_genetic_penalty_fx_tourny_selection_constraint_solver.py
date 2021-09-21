@@ -2,7 +2,7 @@ from board import Board
 import numpy as np
 import copy
 import random
-from constrain_solver import ConstraintSolver
+from constraint_solver import ConstraintSolver
 
 class GA(ConstraintSolver):
 

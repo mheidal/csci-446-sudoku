@@ -9,14 +9,15 @@ from backtracking_constraint_solver import *
 from simple_backtracking_constraint_solver import *
 from backtracking_forward_checking_constraint_solver import *
 from backtracking_arc_consistency_constraint_solver import *
+from local_search_genetic_penalty_fx_tourny_selection_constraint_solver import *
 from cell import *
 
 
 def main():
 
     solvers = [SimpleBacktracking, ForwardChecking, ArcConsistency,
-               LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver]
-    # TODO: GENETIC ALGORITHM CLASS
+               LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver, GA]
+
     for solver in solvers:
         if solver is SimpleBacktracking:
             board_names: List[str] = ["Easy-P1", "Easy-P2", "Easy-P3", "Easy-P4", "Easy-P5",
