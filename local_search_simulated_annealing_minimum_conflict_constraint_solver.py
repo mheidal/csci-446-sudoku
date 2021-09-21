@@ -79,15 +79,11 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
         :param board: Unsolved Sudoku board represented as a Board
         :return: Board as a solution. If the Board is not solves, returns current progress.
         """
-        # k_boltzmann_constant: float = 1.0
         k_boltzmann_constant: float = 0.00001
-        # k_boltzmann_constant: float = 1.38*pow(10, -23)
         current_board = board
         for t in range(1, self.number_iterations):
             temperature: float = self.schedule(t)
             if temperature < 0.0000001 or t == self.number_iterations - 1 or current_board.value == 0:
-                # print(
-                # f"\nSimulated Annealing\nViolated Constraints: {current_board.value}\nNumber of Iterations: {t}\nCurrent Temperature: {temperature}\n")
                 if current_board.value == 0:
                     print(t)
                 self.solutions.append(deepcopy(current_board))
@@ -103,7 +99,6 @@ class LocalSearchSimulatedAnnealingMinimumConflictConstraintSolver(ConstraintSol
                         exp((-delta_energy) / (k_boltzmann_constant * temperature)))
                 except OverflowError:
                     next_board_probability = 0.01
-                # next_board_probability: float = 0 if (delta_energy == 0) and (temperature < self.starting_temperature/2) else 1 / (exp((-delta_energy) / (k_boltzmann_constant * temperature)))
                 current_board = \
                     random.choices([current_board, next_board], weights=[1, next_board_probability * 100], k=1)[0]
 
